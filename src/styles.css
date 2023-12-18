@@ -1,0 +1,22 @@
+body{
+  font-family: sans-serif;
+  background-color: rgb(31, 30, 30);
+  color: white;
+  margin: 0px;
+  padding: 0px;
+  width: 99vw;
+}
+
+.sidebar{
+  height: 97vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.msgBox{
+height: 79.5vh;
+}
+
+.pointer{
+  cursor: pointer;
+}
