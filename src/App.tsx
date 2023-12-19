@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Dropdown, DropdownButton, DropdownItem, Modal } from "react-bootstrap";
 
+import { WebviewWindow } from "@tauri-apps/api/window";
 
 interface messageType{
   name:string,
@@ -20,7 +21,10 @@ function App() {
   })
 
   const handleSubmit=(e:FormEvent)=>{
-
+    e.preventDefault()
+    let ph = phoneNumber.trim()
+    let nw = new WebviewWindow("Whatsapp",{url: `https://wa.me/${ph}?text=${encodeURIComponent(message)}`})
+    nw.show()
   }
 
  
@@ -58,10 +62,13 @@ function App() {
   }
 
   const EditMessage=(e:FormEvent)=>{
-    removeMessage(selected)
-    let data = messageList;
+    e.preventDefault()
+    
+    let data = messageList.filter((item:any,index)=>index!==selected);
     data.push(addData)
-    localStorage.setItem("messageList", JSON.stringify(data));
+    localStorage.setItem("messageList", JSON.stringify(data))
+    getData()
+    setShowEdit(false)
   }
 
   useEffect(()=>{
@@ -114,7 +121,7 @@ function App() {
 
         </div>
         <div className="col-sm p-2 sidebar">
-          <form>
+          <form onSubmit={(e)=>handleSubmit(e)}>
             <div className="row">
               <div className="col-sm w-100 mb-3">
                 <input type="tel" className="form-control w-100" placeholder="Phone Number including country code | +263xxxxxxxx" onChange={(e) => {
@@ -132,12 +139,12 @@ function App() {
               </div>
               <div className="row">
                 <div className="col-sm">
-                  <button type="button" className="btn btn-dark fw-bold">Send</button>
+                  <button  type="submit" className="btn btn-dark fw-bold">Send</button>
                 </div>
               </div>
             </div>
-
-          </form>
+</form>
+        
         </div>
 
 
