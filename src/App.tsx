@@ -11,6 +11,8 @@ function App() {
   const [message,setMessage] = useState<string>("")
   const [messageList,setMessageList] = useState<Array<messageType>>([])
   const [show,setShow]=useState<boolean>(false)
+  const [showEdit,setShowEdit]=useState<boolean>(false)
+  const [selected,setSelected] = useState<number>(0)
 
   const [addData,setAddData]=useState({
     name:"",
@@ -55,6 +57,13 @@ function App() {
 
   }
 
+  const EditMessage=(e:FormEvent)=>{
+    removeMessage(selected)
+    let data = messageList;
+    data.push(addData)
+    localStorage.setItem("messageList", JSON.stringify(data));
+  }
+
   useEffect(()=>{
     getData()
 },[])
@@ -87,7 +96,13 @@ function App() {
                     <Dropdown>
                       <DropdownButton variant="dark" title="">
                         <DropdownItem onClick={() => setMessage(item.message)}>Use</DropdownItem>
-                        <Dropdown.Item>Edit</Dropdown.Item>
+                        <Dropdown.Item onClick={()=>{
+                          setSelected(index)
+                          setShowEdit(true)
+                          setAddData({
+                            ...addData,message:item.message,name:item.name
+                          })
+                        }}>Edit</Dropdown.Item>
                         <Dropdown.Item onClick={() => removeMessage(index)}>Delete</Dropdown.Item>
                       </DropdownButton>
                     </Dropdown>
@@ -139,6 +154,35 @@ function App() {
             <div className="row">
               <div className="col-sm mb-3">
                 <input className="form-control" type="text" placeholder="Name" value={addData.name} onChange={(e) => setAddData({ ...addData, name: e.target.value })} />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-sm mb-3">
+                <textarea className="form-control" value={addData.message} onChange={(e) => setAddData({ ...addData, message: e.target.value })}></textarea>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-sm ">
+                <button className="rounded btn btn-dark">Save</button>
+              </div>
+            </div>
+          </form>
+
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showEdit}>
+        <Modal.Header>
+          <h4 className="text-dark">Edit Message</h4>
+          <p className="text-danger mt-2 pointer" onClick={() => {
+            setShowEdit(false)
+          }}>Close</p>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={(e) => EditMessage(e)}>
+            <div className="row">
+              <div className="col-sm mb-3">
+                <input className="form-control" disabled  type="text" placeholder="Name" value={addData.name} onChange={(e) => setAddData({ ...addData, name: e.target.value })} />
               </div>
             </div>
             <div className="row">
