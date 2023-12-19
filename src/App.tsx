@@ -1,12 +1,15 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
+import { Dropdown, DropdownButton, DropdownItem, Modal } from "react-bootstrap";
 
 
-
+interface messageType{
+  name:string,
+  message:String
+}
 function App() {
   const [phoneNumber,setPhoneNumber] = useState("")
-  const [message,setMessage] = useState("")
-  const [messageList,setMessageList] = useState<Array<{name:string,message:string}>>([])
+  const [message,setMessage] = useState<string>("")
+  const [messageList,setMessageList] = useState<Array<messageType>>([])
   const [show,setShow]=useState<boolean>(false)
 
   const [addData,setAddData]=useState({
@@ -17,6 +20,8 @@ function App() {
   const handleSubmit=(e:FormEvent)=>{
 
   }
+
+ 
 
   const getData=()=>{
     let data:any = localStorage.getItem("messageList")
@@ -40,54 +45,74 @@ function App() {
     localStorage.setItem("messageList",JSON.stringify(data))
     setAddData({message:"",name:""})
     getData()
+    setShow(false)
+  }
+
+  const removeMessage = (id:number)=>{
+    let data = messageList.filter((item:any, index)=> index!==id)
+    localStorage.setItem("messageList",JSON.stringify(data))
+    getData()
+
   }
 
   useEffect(()=>{
     getData()
 },[])
 
+    
   return (
     <div className="m-2">
       <div className="row">
         <div className="col-2 p-2 border rounded ms-3 sidebar">
           <div className="d-flex align-content-center align-items-center  justify-content-between w-100 ">
             <div className="">
-            <p><b>View Messages</b></p>
+              <p><b>View Messages</b></p>
             </div>
             <div>
-            <button className="btn btn-dark" onClick={()=>setShow(true)}><b>+</b></button>
-            </div>  
-            
+              <button className="btn btn-dark" onClick={() => setShow(true)}><b>+</b></button>
+            </div>
+
           </div>
           <div mt-3>
-            <br/>
-              {
-                messageList.map((item,index)=>{
-                  return(
-                    <div className="bg-dark p-2 rounded" key={index} onClick={()=>setMessage(item.message)}>
-                      <p>{item.name}</p>
+            
+            {
+              messageList.map((item:any, index) => {
+                return (
+                  <div className="rounded d-flex justify-content-between bg-dark mt-2 align-content-center  align-items-center  " key={index} >
+                    <div >
+                      
+                      <p className="p-2 mb-0">{item.name}</p>
+
                     </div>
-                  )
-                })
-              }
-            </div>   
+                    <Dropdown>
+                      <DropdownButton variant="dark" title="">
+                        <DropdownItem onClick={() => setMessage(item.message)}>Use</DropdownItem>
+                        <Dropdown.Item>Edit</Dropdown.Item>
+                        <Dropdown.Item onClick={() => removeMessage(index)}>Delete</Dropdown.Item>
+                      </DropdownButton>
+                    </Dropdown>
+                  </div>
+                )
+              })
+            }
+          </div>
 
         </div>
         <div className="col-sm p-2 sidebar">
           <form>
             <div className="row">
               <div className="col-sm w-100 mb-3">
-                <input type="tel" className="form-control w-100" placeholder="Phone Number including country code | +263xxxxxxxx" onChange={(e)=>{
+                <input type="tel" className="form-control w-100" placeholder="Phone Number including country code | +263xxxxxxxx" onChange={(e) => {
                   setPhoneNumber(e.target.value)
-                }}/>
+                }} />
               </div>
             </div>
             <div className="row ">
               <div className="col-sm mb-3">
-                <textarea className="form-control msgBox" value={message} placeholder="Add the message you want to send to the client" onChange={(e)=>{
+                <textarea className="form-control msgBox" value={message} placeholder="Add the message you want to send to the client" onChange={(e) => {
                   setMessage(e.target.value)
                 }}>
-                  
+
                 </textarea>
               </div>
               <div className="row">
@@ -105,34 +130,35 @@ function App() {
       <Modal show={show}>
         <Modal.Header>
           <h4 className="text-dark">Add Message</h4>
-          <p className="text-danger mt-2 pointer" onClick={()=>{
+          <p className="text-danger mt-2 pointer" onClick={() => {
             setShow(false)
           }}>Close</p>
         </Modal.Header>
         <Modal.Body>
-         <form onSubmit={(e)=>AddMessage(e)}>
-          <div className="row">
-            <div className="col-sm mb-3">
-              <input className="form-control" type="text" placeholder="Name" value={addData.name} onChange={(e)=>setAddData({...addData,name:e.target.value})}/>
+          <form onSubmit={(e) => AddMessage(e)}>
+            <div className="row">
+              <div className="col-sm mb-3">
+                <input className="form-control" type="text" placeholder="Name" value={addData.name} onChange={(e) => setAddData({ ...addData, name: e.target.value })} />
+              </div>
             </div>
-          </div>
-          <div className="row">
-            <div className="col-sm mb-3">
-              <textarea className="form-control" value={addData.message} onChange={(e)=>setAddData({...addData,message:e.target.value})}></textarea>
+            <div className="row">
+              <div className="col-sm mb-3">
+                <textarea className="form-control" value={addData.message} onChange={(e) => setAddData({ ...addData, message: e.target.value })}></textarea>
+              </div>
             </div>
-          </div>
-          <div className="row">
-            <div className="col-sm ">
-             <button className="rounded btn btn-dark">Save</button>
+            <div className="row">
+              <div className="col-sm ">
+                <button className="rounded btn btn-dark">Save</button>
+              </div>
             </div>
-          </div>
-         </form>
+          </form>
 
         </Modal.Body>
       </Modal>
 
     </div>
   );
+
 }
 
 export default App;
